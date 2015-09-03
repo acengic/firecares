@@ -29,8 +29,10 @@
       region="{{ request.GET.region }}"
       sort-fields='{{ sort_by_fields|safe }}'
       name="{{ request.GET.name }}"
-      population="{{ request.GET.population }}"
-      dist-model-score="{{ request.GET.dist_model_score }}"
+      population-lte="{{ request.GET.population_lte }}"
+      population-gte="{{ request.GET.population_gte }}"
+      dist-model-score-lte="{{ request.GET.dist_model_score_lte }}"
+      dist-model-score-gte="{{ request.GET.dist_model_score_gte }}"
       >
 
 {% include "firestation/_navbar.html" %}
@@ -213,14 +215,15 @@
                                     </ui-select>
                                 </div>
                                 <div class="ct-form--item ct-u-marginBoth40">
-                                    <input name="dist_model_score" type="text" ng-model="params.dist_model_score" class="slider ct-js-sliderTicks" data-slider-handle="square" data-slider-min="{{ dist_min|floatformat|default:0 }}" data-slider-max="{{ dist_max|floatformat|default:1000 }}" data-slider-step="1" 
-                                    data-slider-value="[{{ request.GET.dist_model_score |default:dist_min}} , {{dist_max}}]"/>
+                                    <input name="dist_model_score" type="text" ng-model="rangeScore" class="slider ct-js-sliderTicks" data-slider-handle="square" data-slider-min="{{ dist_min|floatformat|default:0 }}" data-slider-max="{{ dist_max|floatformat|default:1000 }}" data-slider-step="1" 
+                                    data-slider-value="[{{ request.GET.dist_model_score_gte |default:dist_min}} , {{request.GET.dist_model_score_lte |default:dist_max}}]"/>
+
                                     <label class="text-center center-block">DIST Score (s)</label>
                                 </div>
 
 
                                 <div class="ct-u-displayTableCell">
-                                    <input name="population" type="text" ng-model="params.population" class="slider ct-js-sliderTicks"  data-slider-handle="square" data-slider-min="{{ population_min|floatformat|default:0 }}" data-slider-max="{{ population_max|floatformat|default:1000 }}"  data-slider-step="10" data-slider-value="[{{request.GET.population|default:population_min}} , {{population_max}} ]"/>
+                                    <input name="population" type="text" ng-model="rangePopulation" class="slider ct-js-sliderTicks"  data-slider-handle="square" data-slider-min="{{ population_min|floatformat|default:0 }}" data-slider-max="{{ population_max|floatformat|default:1000 }}"  data-slider-step="100" data-slider-value="[{{request.GET.population_gte|default:population_min}} , {{request.GET.population_lte|default:population_max}} ]"/>
                                     <label class="text-center center-block">Protected Population 
                                    </label> 
                                 </div>

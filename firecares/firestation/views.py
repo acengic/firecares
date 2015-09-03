@@ -23,8 +23,8 @@ class DISTScoreContextMixin(object):
         context['dist_min'] = score_metrics['dist_model_score__min']
 
         population_metrics = FireDepartment.objects.all().aggregate(Max('population'), Min('population'))
-        context['population_max'] = population_metrics['population__max']/1000
-        context['population_min'] = population_metrics['population__min']/1000
+        context['population_max'] = population_metrics['population__max']
+        context['population_min'] = population_metrics['population__min']
 
         return context
 
@@ -179,8 +179,7 @@ class FireDepartmentListView(ListView, SafeSortMixin, LimitMixin, DISTScoreConte
         ]
 
     search_fields = ['fdid', 'state', 'region', 'name']
-    range_fields = ['population','dist_model_score']
-
+    
     def get_queryset(self):
         queryset = super(FireDepartmentListView, self).get_queryset()
         queryset = self.sort_queryset(queryset, self.request.GET.get('sortBy'))
@@ -193,23 +192,12 @@ class FireDepartmentListView(ListView, SafeSortMixin, LimitMixin, DISTScoreConte
                     field += '__icontains'
                 queryset = queryset.filter(**{field: value})
 
-            #range is passed as pair of comma delimited min and max values for example 12,36
-            if  field in self.range_fields and value and "," in value:
-                min_max = value.split(",")
-                Min = int(min_max[0])
-                Max = int(min_max[1])
-
-                # population values received in thousands need to convert
-                if field == 'population':
-                    Min *= 1000;
-                    Max *= 1000;
-
-                if Min:
-                    queryset = queryset.filter(**{field+'__gte': Min})
-                
-                if Max:
-                    queryset = queryset.filter(**{field+'__lte': Max})
             
+            # field name ends with _lte,_gte, _lt or _gt AND value is positive integer
+            if  (field.lower().endswith('_lte') or field.lower().endswith('_gte') or field.lower().endswith('_lt') or field.lower().endswith('_gt')) and value.isdigit():
+                pos = field.rfind("_") #last underscore in field
+                field = field[:pos] + "_" + field[pos:]  #add another underscore _gte becoms __gte
+                queryset = queryset.filter(**{field: value})
 
         return queryset
 

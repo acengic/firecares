@@ -8,10 +8,14 @@
             return {
                 restrict: 'C',
                 link: function (scope, element, attrs) {
+                    scope.rangePopulation;
+                    scope.rangeScore;
+
                     scope.params = {};
                     scope.sortFields = [];
                     scope.limits = [15, 30, 60, 90];
                     
+
                     attrs.$observe('fdid', function() {
                       scope.params.fdid = attrs.fdid;
                     });
@@ -28,17 +32,22 @@
                       scope.params.region = attrs.region;
                     });
 
-
-                    attrs.$observe('population', function() {
-                      scope.params.population = attrs.population;
+                    attrs.$observe('populationGte', function() {
+                      scope.params.population_gte = attrs.populationGte;
                     });
 
+                    attrs.$observe('populationLte', function() {
+                      scope.params.population_lte = attrs.populationLte;
+                    });
 
-                   attrs.$observe('distModelScore', function() {
-                      scope.params.dist_model_score = attrs['distModelScore']; 
-                   });
+                    attrs.$observe('distModelScoreLte', function() {
+                      scope.params.dist_model_score_lte = attrs.distModelScoreLte; 
+                    });
 
-
+                    attrs.$observe('distModelScoreGte', function() {
+                      scope.params.dist_model_score_gte = attrs.distModelScoreGte;
+                    });
+                      
                     attrs.$observe('sortBy', function() {
                       scope.params.sortBy = attrs['sortBy'];
                     });
@@ -55,6 +64,13 @@
                     scope.regions = ['Any', 'Midwest', 'South', 'West'];
 
                     scope.search = function() {
+
+                        scope.params.dist_model_score_gte = scope.rangeScore.split(",")[0].trim(); 
+                        scope.params.dist_model_score_lte = scope.rangeScore.split(",")[1].trim();
+                        
+                        scope.params.population_gte = scope.rangePopulation.split(",")[0].trim(); 
+                        scope.params.population_lte = scope.rangePopulation.split(",")[1].trim();
+
                         window.location = window.location.pathname + '?' + $.param( scope.params );
                       }
                     }
